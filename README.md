@@ -43,17 +43,81 @@ The platform ensures **automation, transparency, and scalability** in complex de
 # System Architecture
 
 ```
-Client Request
-      ↓
-REST API (Flask)
-      ↓
-Workflow Engine
-      ↓
-Rules Engine
-      ↓
-External Services
-      ↓
-Database (State + Audit Logs)
+## System Architecture
+
+```mermaid
+flowchart TD
+
+A[Client / User Request] --> B[REST API - Flask]
+
+B --> C[Input Validator]
+
+C --> D[Workflow Engine]
+
+D --> E[Rule Engine]
+
+E --> F{Rule Evaluation}
+
+F -->|Pass| G[Next Workflow Stage]
+
+F -->|Fail| H[Reject Decision]
+
+G --> I{More Stages?}
+
+I -->|Yes| D
+I -->|No| J[Final Decision - Approve]
+
+D --> K[External Services]
+
+K --> L[Credit Check API]
+K --> M[Fraud Detection API]
+
+D --> N[Audit Logger]
+
+N --> O[Audit Log Storage]
+
+D --> P[Database]
+
+P --> Q[Request State Storage]
+```
+
+### Components Explained
+
+**Client / User Request**
+The system receives structured requests (JSON format) from users or external systems.
+
+**REST API (Flask)**
+Handles incoming HTTP requests and forwards them to the workflow engine.
+
+**Input Validator**
+Ensures the request data matches the expected schema before processing.
+
+**Workflow Engine**
+Controls the lifecycle of the request and manages transitions between stages.
+
+**Rule Engine**
+Evaluates configurable rules loaded from YAML configuration files.
+
+**External Services**
+Simulated services such as credit score checks or fraud detection APIs.
+
+**Audit Logger**
+Records every rule evaluation and workflow transition for full decision transparency.
+
+**Database**
+Stores request states, audit logs, and workflow history.
+
+---
+
+### Workflow Execution
+
+1. Request received through API
+2. Input validation performed
+3. Rules evaluated in workflow stages
+4. External services checked if required
+5. Decision generated (Approve / Reject / Retry / Manual Review)
+6. Audit log recorded for traceability
+
 ```
 
 ### Components
